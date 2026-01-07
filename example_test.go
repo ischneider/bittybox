@@ -12,10 +12,10 @@ func ExampleEvaluate() {
 }
 
 func ExampleCompileExpr() {
-	expr, err := bittybox.CompileExpr("5 + y", "y")
+	expr, err := bittybox.CompileExpr("5 + y", "y", "z")
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(expr.Evaluate([]float64{10}))
-	// Output: 15
+	fmt.Println(expr.Evaluate([]float64{10}), expr.Vars)
+	// Output: 15 [y]
 }

@@ -36,6 +36,8 @@ type Var struct {
 type Expr struct {
 	s stack
 	f []float64
+	// Vars are the variables referenced in this Expr
+	Vars []string
 }
 
 // Compute evaluates the expression with the provided values.
@@ -47,13 +49,23 @@ func (e *Expr) Evaluate(vals []float64) float64 {
 }
 
 // CompileExpr compiles the provided forumula into an Expr.
+// VarNames are the allowed set of variables for evaluation.
 func CompileExpr(formula string, varNames ...string) (Expr, error) {
 	s, err := newParserString(formula).Parse()
 	if err != nil {
 		return Expr{}, err
 	}
 	s, err = shuntingYard(s, varNames)
-	return Expr{s, nil}, err
+	if err != nil {
+		return Expr{}, err
+	}
+	var vars []string
+	for _, t := range s.Values {
+		if t.Type == variable {
+			vars = append(vars, t.Value)
+		}
+	}
+	return Expr{s, nil, vars}, err
 }
 
 // Compute will compile and evaluate an expression.
